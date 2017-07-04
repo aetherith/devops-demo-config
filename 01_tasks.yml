@@ -1,0 +1,5 @@
+---
+hosts: all
+  tasks:
+    - name: Display a debug message.
+      debug: "Hello I am {{ inventory_hostname }}."
