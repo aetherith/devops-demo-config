@@ -1,5 +1,6 @@
 ---
 - hosts: all
+  become: yes
   tasks:
     - debug:
         msg: 'Hi I am {{ inventory_hostname }}.'
