@@ -1,0 +1,29 @@
+#!/usr/bin/env groovy
+node {
+  stage('Preparation') {
+    dir('config') {
+      git 'https://github.com/aetherith/devops-demo-config.git'
+    }
+    dir('roles') {
+      git 'https://github.com/aetherith/devops-demo-roles.git'
+    }
+  }
+  stage('Test') {
+    dir('config/05_jenkins') {
+      sh 'find . -type d -maxdepth 1 -mindepth 0 -not -path \'./.git\' | xargs ansible-lint'
+    }
+    dir('roles') {
+      sh 'find . -type d -maxdepth 1 -mindepth 1 -not -path \'./.git\' | xargs ansible-lint'
+    }
+  }
+  stage('Deploy') {
+    dir('config/05_jenkins') {
+      withCredentials([string(credentialsId: 'Ansible Vault Password', variable: 'ANSIBLE_VAULT_PASSWORD')]) {
+        writeFile file: '.vault_password', text: '''#!/bin/sh
+        echo $ANSIBLE_VAULT_PASSWORD'''
+        sh 'chmod u+x .vault_password'
+        ansiblePlaybook credentialsId: 'fc9e437f-31c4-42d9-ba86-d7efa2d59324', installation: 'System Ansible', inventory: 'hosts', playbook: 'site.yml', sudoUser: null
+      }
+    }
+  }
+}

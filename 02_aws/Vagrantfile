@@ -1,0 +1,39 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require 'yaml'
+
+aws_creds = YAML::load(File.read("#{File.dirname(__FILE__)}/.aws_credentials"))
+
+Vagrant.configure("2") do |config|
+  # Base box definition
+  config.vm.box = "debian/stretch64"
+  # Provider specific configuration
+  config.vm.provider "virtualbox" do |vb|
+    vb.cpus = 1
+    vb.memory = 1024
+  end
+  # AWS Config
+  config.vm.provider :aws do |aws, override|
+    aws.access_key_id = aws_creds["access_key_id"]
+    aws.secret_access_key = aws_creds["secret_access_key"]
+
+    override.vm.box = "dummy"
+    aws.ami = "ami-27072e31"
+
+    aws.instance_type = "t2.micro"
+
+    aws.security_groups = ['webserver']
+    aws.keypair_name = "aws-web"
+
+    override.ssh.username = "ec2-user"
+    override.ssh.private_key_path = "~/.ssh/aws-web.pem"
+  end
+  # VM Definition
+  config.vm.define :mimir do |mimir|
+    mimir.vm.hostname = 'mimir.aetherith.net'
+    mimir.vm.synced_folder '.','/vagrant',disabled: true
+    mimir.vm.network :forwarded_port, guest: 80, host: 8080
+    mimir.vm.network :forwarded_port, guest: 443, host: 8443
+  end
+end

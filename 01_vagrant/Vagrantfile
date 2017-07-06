@@ -1,0 +1,19 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  # Base box definition
+  config.vm.box = "debian/stretch64"
+  # Provider specific configuration
+  config.vm.provider "virtualbox" do |vb|
+    vb.cpus = 1
+    vb.memory = 1024
+  end
+  # VM Definition
+  config.vm.define :mimir do |mimir|
+    mimir.vm.hostname = 'mimir.aetherith.net'
+    mimir.vm.synced_folder '.','/vagrant',disabled: true
+    mimir.vm.network :forwarded_port, guest: 80, host: 8080
+    mimir.vm.network :forwarded_port, guest: 443, host: 8443
+  end
+end
