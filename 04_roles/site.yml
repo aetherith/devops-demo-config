@@ -1,8 +1,9 @@
 ---
 - hosts: all
   become: yes
-  tasks:
-    - name: Install Git
-      package:
-        name: git
-        state: present
+  roles:
+    - role: nginx
+      nginx_server_name: demo.aetherith.net
+      nginx_http_port: 81
+      nginx_root_dir: /var/www/site
+      nginx_site_message: Hello Sapient!

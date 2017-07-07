@@ -26,7 +26,8 @@ Vagrant.configure("2") do |config|
     aws.security_groups = ['webserver']
     aws.keypair_name = "aws-web"
 
-    override.ssh.username = "ec2-user"
+    # User to connect over SSH as, usually 'ec2-user' for Amazon Linux AMIs
+    override.ssh.username = "admin"
     override.ssh.private_key_path = "~/.ssh/aws-web.pem"
   end
   # VM Definition
