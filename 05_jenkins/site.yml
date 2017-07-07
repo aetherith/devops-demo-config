@@ -3,3 +3,7 @@
   become: yes
   roles:
     - role: nginx
+      nginx_server_name: demo.aetherith.net
+      nginx_http_port: 80
+      nginx_root_dir: /var/www/site
+      nginx_site_message: Hello Sapient!
